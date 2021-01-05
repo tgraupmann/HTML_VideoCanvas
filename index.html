@@ -1,0 +1,127 @@
+<html>
+<head>
+  <style>
+    .divVideo {
+    	display: none;
+    }
+    .divCanvas {
+      width: 1080px;
+      height: 720px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Read image data from videos and render on canvas from cache:</h1>
+  <canvas id="captureCanvas" class="divCanvas" style="display: none"></canvas>
+
+  <video id="video1" class="divVideo" src="video/video_1.mp4"></video>
+  <canvas id="canvas1" class="divCanvas"></canvas>
+
+  <video id="video2" class="divVideo" src="video/video_2.mp4"></video>
+  <canvas id="canvas2" class="divCanvas"></canvas>
+
+  <video id="video3" class="divVideo" src="video/video_3.mp4"></video>
+  <canvas id="canvas3" class="divCanvas"></canvas>
+
+  <video id="video4" class="divVideo" src="video/video_4.mp4"></video>
+  <canvas id="canvas4" class="divCanvas"></canvas>
+
+  <video id="video5" class="divVideo" src="video/video_5.mp4"></video>
+  <canvas id="canvas5" class="divCanvas"></canvas>
+
+  <video id="video6" class="divVideo" src="video/video_6.mp4"></video>
+  <canvas id="canvas6" class="divCanvas"></canvas>
+
+  <video id="video7" class="divVideo" src="video/video_7.mp4"></video>
+  <canvas id="canvas7" class="divCanvas"></canvas>
+
+  <video id="video8" class="divVideo" src="video/video_8.mp4"></video>
+  <canvas id="canvas8" class="divCanvas"></canvas>
+
+  <video id="video9" class="divVideo" src="video/video_9.mp4"></video>
+  <canvas id="canvas9" class="divCanvas"></canvas>
+
+  <video id="video10" class="divVideo" src="video/video_10.mp4"></video>
+  <canvas id="canvas10" class="divCanvas"></canvas>
+
+  <video id="video11" class="divVideo" src="video/video_11.mp4"></video>
+  <canvas id="canvas11" class="divCanvas"></canvas>
+
+  <video id="video12" class="divVideo" src="video/video_12.mp4"></video>
+  <canvas id="canvas12" class="divCanvas"></canvas>
+
+  <video id="video13" class="divVideo" src="video/video_13.mp4"></video>
+  <canvas id="canvas13" class="divCanvas"></canvas>
+
+  <video id="video14" class="divVideo" src="video/video_14.mp4"></video>
+  <canvas id="canvas14" class="divCanvas"></canvas>
+
+  <video id="video15" class="divVideo" src="video/video_15.mp4"></video>
+  <canvas id="canvas15" class="divCanvas"></canvas>
+</body>
+
+<script>
+
+  function renderFrames(canvas, videoCache, incrementer) {
+    let ctx = canvas.getContext('2d');
+    let imgData = videoCache[incrementer.index];
+    if (imgData != undefined) {
+      ctx.putImageData(imgData, 0, 0);
+    }
+    incrementer.index = (incrementer.index + 1) % videoCache.length;
+  }
+
+  function videoToCanvas(video, canvas) {
+    video.addEventListener('play', function () {
+      var $this = this;
+      var videoCache = [];
+      (function loop() {
+          if (!$this.ended && !$this.paused) {
+              var ctx = captureCanvas.getContext('2d');
+              ctx.drawImage($this, 0, 0);
+              if (video.currentTime == 0) {
+                setTimeout(loop, 1000 / 24); // drawing at 24fps
+                return;
+              }
+              var imgData = ctx.getImageData(0, 0, captureCanvas.width, captureCanvas.height);
+              videoCache.push(imgData);
+              setTimeout(loop, 1000 / 24); // drawing at 24fps
+          } else {
+            console.log('capture complete', videoCache.length, 'frames');
+            var incrementer = { index: 0 };
+            setInterval(function() {
+              renderFrames(canvas, videoCache, incrementer);
+            }, 1000/24)
+            video.pause();
+          }
+      })();
+    });
+    video.addEventListener('loadeddata', function () {
+      console.log('loadeddata');
+      video.play();
+    });
+    video.muted = true;
+    var ctx = canvas.getContext("2d");
+    ctx.font = "30px Arial";
+    ctx.fillText("Buffering...", 10, 50);
+  }
+
+  videoToCanvas(video1, canvas1);
+  videoToCanvas(video2, canvas2);
+  videoToCanvas(video3, canvas3);
+  videoToCanvas(video4, canvas4);
+  videoToCanvas(video5, canvas5);
+  videoToCanvas(video6, canvas6);
+  videoToCanvas(video7, canvas7);
+  videoToCanvas(video8, canvas8);
+  videoToCanvas(video9, canvas9);
+  videoToCanvas(video10, canvas10);
+  videoToCanvas(video11, canvas11);
+  videoToCanvas(video12, canvas12);
+  videoToCanvas(video13, canvas13);
+  videoToCanvas(video14, canvas14);
+  videoToCanvas(video15, canvas15);
+
+</script>
+
+</html>
